@@ -1,5 +1,5 @@
 program circuits
-  call menu
+    call menu
 end program circuits
 
 subroutine menu
@@ -20,9 +20,10 @@ subroutine menu
 end subroutine menu
 
 subroutine manuellement
-    real :: V0, r
+    real :: V0, r, sum_inv, req
     integer :: num_r, i, num_noeuds, j, k, n_serie, n_parallele
-    integer, dimension(:), allocatable :: noeuds, r_serie, r_parallele
+    integer, dimension(:), allocatable :: noeuds, r_serie
+    real, dimension(:), allocatable :: r_parallele
 
     write(*,*) "Entrez la valeur de V0"
     read(*, *) V0
@@ -33,45 +34,50 @@ subroutine manuellement
 
     allocate(noeuds(num_noeuds))
     allocate(r_serie(num_r))
-    allocate(r_parallele(num_r))
+    allocate(r_parallele(num_r))  ! Alocado aqui fora do loop
 
     do i = 1, num_r
-        write(*,*) "Résistance ", i
-        write(*,*) "Entrez la valeur de la résistance (en ohms) :"
+        write(*,*) "RÃ©sistance ", i
+        write(*,*) "Entrez la valeur de la resistance (en ohms) :"
         read(*, *) r
-        write(*,*) "Entrez les nœuds (séparés par un espace) entre lesquels la résistance est connectée :"
+        write(*,*) "Entrez les noeuds (separes par un espace) entre lesquels la resistance est connectee :"
         read(*, *) noeuds
 
-        ! On a la valeur de la résistance et la matrice 'noeuds' contenant les nœuds.
+        ! On a la valeur de la rÃ©sistance et la matrice 'noeuds' contenant les nÅ“uds.
         ! Faire quelque chose pour stocker ou les traiter.
 
-        ! Vérifiez si elle est en série ou en parallèle
+        ! VÃ©rifiez si elle est en sÃ©rie ou en parallÃ¨le
         n_serie = 0
         n_parallele = 0
 
         do k = 1, i - 1
             if (all(noeuds == noeuds(k))) then
-                ! Elle est en série avec une résistance précédente
+                ! Elle est en sÃ©rie avec une rÃ©sistance prÃ©cÃ©dente
                 r_serie(n_serie + 1) = i
                 n_serie = n_serie + 1
             else if (any(noeuds == noeuds(k))) then
-                ! Elle est en parallèle avec une résistance précédente
-                r_parallele(n_parallele + 1) = i
+                ! Elle est en parallÃ¨le avec une rÃ©sistance prÃ©cÃ©dente
                 n_parallele = n_parallele + 1
+                r_parallele(n_parallele) = r  ! AtribuÃ­do o valor de r ao array
             end if
         end do
 
         if (n_serie > 0) then
-            write(*,*) "Resistance ", i, " est en série avec la (les) resistance(s) ", r_serie(1:n_serie)
+        write(*,*) "Resistance ", i, " est en serie avec la (les) resistance(s) ", r_serie(1:n_serie)
         else if (n_parallele > 0) then
-            write(*,*) "Resistance ", i, " est en parallele avec la (les) resistance(s) ", r_parallele(1:n_parallele)
-        end if
+        !Calculo da resistencia equivalent em paralelo
+            sum_inv = 0.0
+                do j = 1, n_parallele
+                    sum_inv = sum_inv + 1.0 / r_parallele(j)
+                end do
 
-    end do
+        req = 1.0 / sum_inv
+
+        write(*,*) "La resistance equivalente en parallele est : ", req
+    end if
 
     deallocate(noeuds)
     deallocate(r_serie)
     deallocate(r_parallele)
-    ! Reste de votre programme
-    ! ...
+
 end subroutine manuellement
