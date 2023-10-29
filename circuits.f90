@@ -1,4 +1,5 @@
 program circuits
+    implicit none
     call menu
 end program circuits
 
@@ -20,23 +21,67 @@ subroutine menu
 end subroutine menu
 
 subroutine manuellement
-    real :: V0, r, sum_inv, req
-    integer :: num_r, i, num_noeuds, j, k, n_serie, n_parallele
-    integer, dimension(:), allocatable :: noeuds, r_serie
-    real, dimension(:), allocatable :: r_parallele
+    !real :: V0, r, sum_inv, req
+    !integer :: num_r, i,  j, k, n_serie, n_parallele
+    !integer, dimension(:), allocatable :: noeuds, r_serie
+    !real, dimension(:), allocatable :: r_parallele
+    !real, dimension(:), allocatable :: corrente_sources, tensao_sources
 
-    write(*,*) "Entrez la valeur de V0"
-    read(*, *) V0
+    call noeuds_1
+    call sources
+    call elements
+
+end subroutine manuellement
+
+subroutine noeuds_1
+    integer :: num_noeuds
+    integer, dimension(:), allocatable :: noeuds
+    ! Numero de Nós
     write(*,*) "Combien de noeuds le circuit aura-t-il ?"
     read(*,*) num_noeuds
-    write (*,*) "Combien de resistances y aura-t-il ?"
+
+    ! allocate(noeuds(num_noeuds))
+    !allocate(r_serie(num_r))
+    !allocate(r_parallele(num_r))  ! Alocado aqui fora do loop
+end subroutine
+
+subroutine sources
+    integer :: num_sources, m, choix
+    integer, dimension(:), allocatable :: noeuds
+    real, dimension(:), allocatable :: corrente_sources, tensao_sources
+
+    ! Nombre de sources
+    write(*,*) "Combien de sources le circuit aura-t-il ?"
+    read(*,*) num_sources
+
+    ! Valeurs des sources
+    do m = 1, num_sources
+        write(*,*) "1- Courant ou 2- Tension : "
+        read(*,*) choix
+        if (choix == 1) then
+            write(*,*) "Entrez la valeur du courant en A :"
+            read(*,*) corrente_sources(m)
+        else if (choix == 2) then
+            write(*,*) "Entrez la valeur de la tension en V :"
+            read(*, *) tensao_sources(m)
+        else
+            write(*,*) "Choix invalide. Réessayez."
+            ! m = m - 1 ! Pour permettre à l'utilisateur de corriger le choix invalide
+        end if
+    end do
+end subroutine
+
+
+subroutine elements
+    real :: V0, r, sum_inv, req
+    integer :: num_r, i,  j, k, n_serie, n_parallele
+    integer, dimension(:), allocatable :: noeuds, r_serie
+    real, dimension(:), allocatable :: r_parallele
+    real, dimension(:), allocatable :: corrente_sources, tensao_sources
+
+     write (*,*) "Combien de resistances y aura-t-il ?"
     read (*,*) num_r
-
-    allocate(noeuds(num_noeuds))
-    allocate(r_serie(num_r))
-    allocate(r_parallele(num_r))  ! Alocado aqui fora do loop
-
-    do i = 1, num_r
+        do i = 1, num_r
         write(*,*) "Résistance ", i
         write(*,*) "Entrez la valeur de la resistance (en ohms) :"
         read(*, *) r
@@ -79,5 +124,5 @@ subroutine manuellement
     deallocate(noeuds)
     deallocate(r_serie)
     deallocate(r_parallele)
-
-end subroutine manuellement
+    end do
+end subroutine
