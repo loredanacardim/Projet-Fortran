@@ -54,6 +54,11 @@ subroutine sources
     write(*,*) "Combien de sources le circuit aura-t-il ?"
     read(*,*) num_sources
 
+    ! Allouer des tableaux pour stocker les valeurs des sources
+    allocate(noeuds(num_sources))
+    allocate(corrente_sources(num_sources))
+    allocate(tensao_sources(num_sources))
+
     ! Valeurs des sources
     do m = 1, num_sources
         write(*,*) "1- Courant ou 2- Tension : "
@@ -66,9 +71,16 @@ subroutine sources
             read(*, *) tensao_sources(m)
         else
             write(*,*) "Choix invalide. Réessayez."
-            ! m = m - 1 ! Pour permettre à l'utilisateur de corriger le choix invalide
+            !m = m - 1 ! Pour permettre à l'utilisateur de corriger le choix invalide
         end if
     end do
+
+    ! Le programme continue d'ici avec d'autres commandes
+
+    ! Libérez la mémoire allouée pour les tableaux quand vous n'en avez plus besoin
+    deallocate(noeuds)
+    deallocate(corrente_sources)
+    deallocate(tensao_sources)
 end subroutine
 
 
